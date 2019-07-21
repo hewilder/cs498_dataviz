@@ -25,7 +25,7 @@ path {
 </head>
 <body>
 
-<h1>6 Child Births</h1>
+<h1>7 Child Births</h1>
 <p>This is a paragraph.</p>
     
 <div id="option">
@@ -71,8 +71,24 @@ var svg = d3.select("body")
         .attr("transform", 
               "translate(" + margin.left + "," + margin.top + ")");
 
+console.log("test");
+
+d3.csv("data.csv", function(d) {
+	return {
+		date : d.date,
+		close: +d.close
+	};
+}).then(function(data) {
+  console.log(data[0]);
+});
+	
+		
+			  
+			  
 // Get the data
-d3.csv("https://raw.githubusercontent.com/hewilder/cs498_dataviz/master/data.csv", function(error, data) {
+d3.csv("data.csv", function(error, data) {
+    console.log("here");
+	console.log(data);
     data.forEach(function(d) {
         d.date = parseDate(d.date);
         d.close = +d.close;
@@ -105,6 +121,7 @@ function updateData() {
 
     // Get the data again
     d3.csv("https://raw.githubusercontent.com/hewilder/cs498_dataviz/master/data-alt.csv", function(error, data) {
+		console.log(data);
        	data.forEach(function(d) {
 	    	d.date = parseDate(d.date);
 	    	d.close = +d.close;
