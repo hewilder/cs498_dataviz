@@ -1,6 +1,6 @@
 ## Welcome to GitHub Pages
 
-Test edit of page
+[This page](https://hewilder.github.io/cs498_dataviz/)
 
 [Narrative Viz Page](https://hewilder.github.io/cs498_dataviz/test_page.html)
 
