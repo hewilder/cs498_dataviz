@@ -72,7 +72,7 @@ var svg = d3.select("body")
               "translate(" + margin.left + "," + margin.top + ")");
 
 // Get the data
-d3.csv("data.csv", function(error, data) {
+d3.csv("https://raw.githubusercontent.com/hewilder/cs498_dataviz/master/data.csv", function(error, data) {
     data.forEach(function(d) {
         d.date = parseDate(d.date);
         d.close = +d.close;
@@ -104,7 +104,7 @@ d3.csv("data.csv", function(error, data) {
 function updateData() {
 
     // Get the data again
-    d3.csv("data-alt.csv", function(error, data) {
+    d3.csv("https://raw.githubusercontent.com/hewilder/cs498_dataviz/master/data-alt.csv", function(error, data) {
        	data.forEach(function(d) {
 	    	d.date = parseDate(d.date);
 	    	d.close = +d.close;
