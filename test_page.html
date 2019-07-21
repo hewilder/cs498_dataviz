@@ -10,12 +10,43 @@ path {
     fill: none;
 }
 
+.path_green { 
+    stroke: forestgreen;
+    stroke-width: 2;
+    fill: none;
+}
+
 .axis path,
 .axis line {
     fill: none;
     stroke: grey;
     stroke-width: 1;
     shape-rendering: crispEdges;
+}
+
+.btn-group .button {
+  background-color: steelblue; 
+  border: 1px solid white;
+  color: white;
+  padding: 10px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 10px;
+  cursor: pointer;
+  float: left;
+}
+
+.btn-group .button:not(:last-child) {
+  border-right: none; /* Prevent double borders */
+}
+
+.btn-group .button:hover {
+  background-color: lightsteelblue;
+}
+
+.btn-group .button:focus {
+  background-color: forestgreen;
 }
 
 </style>
@@ -25,14 +56,28 @@ path {
 </head>
 <body>
 
-<h1>7 Child Births</h1>
+<h1>8 Child Births</h1>
 <p>This is a paragraph.</p>
-    
+ 
+<div class="btn-group">
+  <button class="button" onclick="originalData()">1</button>
+  <button class="button" onclick="updateData()">2</button>
+  <button class="button">Button</button>
+  <button class="button">Button</button>
+</div>
+
+<p style="clear:both"><br></p>
+ 
 <div id="option">
     <input name="updateButton" 
            type="button" 
            value="Update" 
            onclick="updateData()" />
+		   
+	<input name="origButton" 
+           type="button" 
+           value="Reset" 
+           onclick="originalData()" />	   
 </div>
 
 <!-- load the d3.js library -->    
@@ -44,7 +89,7 @@ var margin = {top: 30, right: 20, bottom: 30, left: 50},
     height = 270 - margin.top - margin.bottom;
 
 // Parse the date / time
-var parseDate = d3.timeFormat("%d-%b-%y").parse;
+var parseDate = d3.timeParse("%d-%b-%y");
 
 // Set the ranges
 var x = d3.scaleTime().range([0, width]);
@@ -71,56 +116,86 @@ var svg = d3.select("body")
         .attr("transform", 
               "translate(" + margin.left + "," + margin.top + ")");
 
-console.log("test");
-
-d3.csv("data.csv", function(d) {
-	return {
-		date : d.date,
-		close: +d.close
-	};
-}).then(function(data) {
+/*
+const data = d3.csv("data.csv").then(function(data) {
+  data.forEach(function(d) {
+	console.log(d.date);
+	console.log(parseDate(d.date));
+    d.date = parseDate(d.date);
+    d.close = +d.close;
+  });
   console.log(data[0]);
 });
-	
+*/
+console.log("here");
+
+d3.csv("data.csv").then(function(data) {
+	console.log("here");
+	console.log(data);
+	data.forEach(function(d) {
+		d.date = parseDate(d.date);
+		d.close = +d.close;
+	});
+
+	// Scale the range of the data
+	x.domain(d3.extent(data, function(d) { return d.date; }));
+	y.domain([0, d3.max(data, function(d) { return d.close; })]);
+
+	// Add the valueline path.
+	svg.append("path")
+		.attr("class", "line")
+		.attr("d", valueline(data));
+
+	// Add the X Axis
+	svg.append("g")
+		.attr("class", "x axis")
+		.attr("transform", "translate(0," + height + ")")
+		.call(xAxis);
+
+	// Add the Y Axis
+	svg.append("g")
+		.attr("class", "y axis")
+		.call(yAxis);
 		
-			  
+ });
 			  
 // Get the data
-d3.csv("data.csv", function(error, data) {
-    console.log("here");
-	console.log(data);
-    data.forEach(function(d) {
-        d.date = parseDate(d.date);
-        d.close = +d.close;
+function originalData() {
+	d3.csv("data.csv").then(function(data) {
+		console.log("here");
+		console.log(data);
+		data.forEach(function(d) {
+			d.date = parseDate(d.date);
+			d.close = +d.close;
+		});
+	
+	// Scale the range of the data again 
+    	x.domain(d3.extent(data, function(d) { return d.date; }));
+	    y.domain([0, d3.max(data, function(d) { return d.close; })]);
+
+    // Select the section we want to apply our changes to
+    var svg = d3.select("body").transition();
+
+    // Make the changes
+        svg.select(".line")   // change the line
+            .duration(750)
+            .attr("d", valueline(data))
+			.style('stroke', 'steelblue');
+        svg.select(".x.axis") // change the x axis
+            .duration(750)
+            .call(xAxis);
+        svg.select(".y.axis") // change the y axis
+            .duration(750)
+            .call(yAxis);
+
     });
-
-    // Scale the range of the data
-    x.domain(d3.extent(data, function(d) { return d.date; }));
-    y.domain([0, d3.max(data, function(d) { return d.close; })]);
-
-    // Add the valueline path.
-    svg.append("path")
-        .attr("class", "line")
-        .attr("d", valueline(data));
-
-    // Add the X Axis
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
-
-    // Add the Y Axis
-    svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis);
-
-});
+}
 
 // ** Update data section (Called from the onclick)
 function updateData() {
 
     // Get the data again
-    d3.csv("https://raw.githubusercontent.com/hewilder/cs498_dataviz/master/data-alt.csv", function(error, data) {
+    d3.csv("https://raw.githubusercontent.com/hewilder/cs498_dataviz/master/data-alt.csv").then(function(data) {
 		console.log(data);
        	data.forEach(function(d) {
 	    	d.date = parseDate(d.date);
@@ -137,7 +212,8 @@ function updateData() {
     // Make the changes
         svg.select(".line")   // change the line
             .duration(750)
-            .attr("d", valueline(data));
+            .attr("d", valueline(data))
+			.style('stroke', 'forestgreen');
         svg.select(".x.axis") // change the x axis
             .duration(750)
             .call(xAxis);
