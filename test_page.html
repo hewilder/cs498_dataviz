@@ -52,10 +52,10 @@ var y = d3.scaleLinear().range([height, 0]);
 
 // Define the axes
 var xAxis = d3.axisBottom(x)
-    .orient("bottom").ticks(5);
+    .ticks(5);
 
 var yAxis = d3.axisLeft(y)
-    .orient("left").ticks(5);
+    .ticks(5);
 
 // Define the line
 var valueline = d3.line()
