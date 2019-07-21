@@ -1,6 +1,6 @@
 ## Welcome to GitHub Pages
 
-Test edit
+Test edit of page
 
 You can use the [editor on GitHub](https://github.com/hewilder/cs498_dataviz/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
 
