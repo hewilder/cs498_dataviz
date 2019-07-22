@@ -75,7 +75,7 @@ div.tooltip {
     font: 12px sans-serif;		
     background: lightsteelblue;	
     border: 0px;		
-    border-radius: 8px;			
+    border-radius: 4px;			
     pointer-events: none;			
 }
 
@@ -165,7 +165,7 @@ var yAxis = d3.axisLeft(y)
 // Define the line
 var valueline = d3.line()
     .x(function(d) { return x(d.date); })
-    .y(function(d) { return y(d.close); });
+    .y(function(d) { return y(d.close); });	
     
 // Define the div for the tooltip
 var div = d3.select("body").append("div")	
@@ -215,7 +215,8 @@ d3.csv("data.csv").then(function(data) {
 	//Add points and tool tip	
 	svg.selectAll("dot")	
         .data(data)			
-    .enter().append("circle")								
+    .enter().append("circle")
+		.attr("class", "plotpoint")
         .attr("r", 5)		
         .attr("cx", function(d) { return x(d.date); })		 
         .attr("cy", function(d) { return y(d.close); })		
@@ -312,22 +313,63 @@ function updateData() {
     	x.domain(d3.extent(data, function(d) { return d.date; }));
 	    y.domain([0, d3.max(data, function(d) { return d.close; })]);
 		
-    // Select the section we want to apply our changes to
-    var svg = d3.select("body").transition();
+		
+		
 	
-	svg.selectAll(".annotation-group").remove();
+		
+		// Select the section we want to apply our changes to
+		var svg = d3.select("body").transition();
+		
+		svg.selectAll(".annotation-group").remove();
 
-    // Make the changes
-        svg.select(".line")   // change the line
-            .duration(750)
-            .attr("d", valueline(data))
+		// Make the changes
+		svg.select(".line")   // change the line
+			.duration(750)
+			.attr("d", valueline(data))
 			.style('stroke', 'forestgreen');
-        svg.select(".x.axis") // change the x axis
-            .duration(750)
-            .call(xAxis);
-        svg.select(".y.axis") // change the y axis
-            .duration(750)
-            .call(yAxis);
+		svg.select(".x.axis") // change the x axis
+			.duration(750)
+			.call(xAxis);
+		svg.select(".y.axis") // change the y axis
+			.duration(750)
+			.call(yAxis);
+		//svg.selectAll(".plotpoint") //remove points
+		//	.duration(750)
+		//	.remove()
+				
+		d3.select(".chart")
+			.selectAll(".plotpoint")
+			.remove();
+			
+		var mark = d3.select(".chart")
+			.selectAll(".plotpoint")	
+			.data(data);			
+		
+		mark.enter().append("circle")
+					.attr("class", "plotpoint")
+					.attr("r", 5)		
+					.attr("cx", function(d) { return x(d.date); })		 
+					.attr("cy", function(d) { return y(d.close); })		
+					.on("mouseover", function(d) {		
+						div.transition()		
+							.duration(200)		
+							.style("opacity", .9);		
+						div	.html(formatTime(d.date) + "<br/>"  + d.close)	
+							.style("left", (d3.event.pageX) + "px")		
+							.style("top", (d3.event.pageY - 28) + "px");	
+						})					
+					.on("mouseout", function(d) {		
+						div.transition()		
+							.duration(500)		
+							.style("opacity", 0);	
+					});
+					
+		//mark.transition();
+		
+		//mark.exit().transition().remove();
+			
+			
+		
 
     });
 }
