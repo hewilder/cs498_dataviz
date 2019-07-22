@@ -5,3 +5,6 @@ https://developer.mozilla.org/en-US/docs/Learn/Common_questions/set_up_a_local_t
 
 Github basics: 
 https://docs.gitlab.com/ee/gitlab-basics/start-using-git.html
+
+Fancy annotations:
+https://bl.ocks.org/susielu/23dc3082669ee026c552b85081d90976
