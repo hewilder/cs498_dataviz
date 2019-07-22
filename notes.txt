@@ -8,3 +8,6 @@ https://docs.gitlab.com/ee/gitlab-basics/start-using-git.html
 
 Fancy annotations:
 https://bl.ocks.org/susielu/23dc3082669ee026c552b85081d90976
+
+Good transitions:
+https://bl.ocks.org/mbostock/3808234

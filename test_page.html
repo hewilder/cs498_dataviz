@@ -92,8 +92,6 @@ div.tooltip {
 <div class="btn-group">
   <button class="button" onclick="originalData()">1</button>
   <button class="button" onclick="updateData()">2</button>
-  <button class="button">Button</button>
-  <button class="button">Button</button>
 </div>
 
 <p style="clear:both"><br></p>
@@ -110,14 +108,53 @@ div.tooltip {
            onclick="originalData()" />	   
 </div>
 
+<p id="value"></p>
+<div id="slider"></div>
+
 <!-- load the d3.js library -->    
 <script src="https://d3js.org/d3.v5.min.js"></script>
 
 <!-- Load d3-annotation -->
 <script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
 
+<!-- Load slider -->
+<script src="https://unpkg.com/d3-simple-slider"></script>
+
+
+
 
 <script>
+
+var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+
+/*var slider = d3.sliderHorizontal()
+	.scale(d3.scaleOrdinal().domain(months).rangePoints([0, 1], 0.5))
+	.axis( d3.svg.axis() )
+	.snap(true)
+	.value("January")
+	.on('onchange', val => {
+      d3.select('#value').text(val);
+    });*/
+
+var slider = d3
+    .sliderHorizontal()
+    .min(0)
+    .max(11)
+    .step(1)
+    .width(300)
+    .displayValue(false)
+    .on('onchange', val => {
+      d3.select('#value').text(months[val]);
+    });
+
+
+  d3.select('#slider')
+    .append('svg')
+    .attr('width', 500)
+    .attr('height', 100)
+    .append('g')
+    .attr('transform', 'translate(30,30)')
+    .call(slider);
 
 // Features of the annotation
 const annotations = [
