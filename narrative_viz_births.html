@@ -100,19 +100,20 @@ body {
 <head>
 <title>CS 498 Narrative Viz</title>
 </head>
-<body>
+<body onload=default_focus()>
 
 <h1>2017 US Child Births</h1>
 
  
 <div class="btn-group">
   <div>Select a view:</div>
-  <button class="button" onclick="by_month_data()">By Month</button>
+  <button class="button" id="default_selection" onclick="by_month_data()">By Month</button>
   <button class="button" onclick="by_day_data()">By Weekday</button>
   <button class="button" onclick="updateData()">By Delivery Method</button>
 </div>
 
 <p style="clear:both"><br></p>
+<p>Tooltips available on mouseover</p>
 
 <div class="narrative_view">
 </div>
@@ -128,6 +129,13 @@ Natality public-use data on CDC WONDER Online Database</p>
 <script src="https://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 <!-- Load ring note -->
 <script src="d3-ring-note.js"></script>
+
+<script type="text/javascript">
+function default_focus()
+{
+     document.getElementById("default_selection").focus();
+}
+</script>
 
 <script>
 
