@@ -2,7 +2,10 @@
 
 [This page](https://hewilder.github.io/cs498_dataviz/)
 
-[Narrative Viz Page](https://hewilder.github.io/cs498_dataviz/test_page.html)
+[Test Narrative Viz Page](https://hewilder.github.io/cs498_dataviz/test_page.html)
+
+[Narrative Viz Page](https://hewilder.github.io/cs498_dataviz/narrative_viz_births.html)
+
 
 You can use the [editor on GitHub](https://github.com/hewilder/cs498_dataviz/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
 
