@@ -78,16 +78,35 @@ body {
 .btn-group .button:focus {
   background-color: forestgreen;
 }
+
+.annotation circle {
+  fill: black;
+  stroke: darkslategrey;
+}
+
+.annotation path {
+  fill: none;
+  stroke: darkslategrey;
+  shape-rendering: crispEdges;
+}
+
+.annotation text {
+  text-shadow: -2px 0 2px #fff, 
+                0 2px 2px #fff,
+                2px 0 2px #fff, 
+                0 -2px 2px #fff;
+}
 </style>
 <head>
 <title>CS 498 Narrative Viz</title>
 </head>
 <body>
 
-<h1>2017 Child Births</h1>
+<h1>2017 US Child Births</h1>
 <p>Source</p>
  
 <div class="btn-group">
+  <div>Select a view:</div>
   <button class="button" onclick="originalData()">By Month</button>
   <button class="button" onclick="updateData()">By Weekday</button>
   <button class="button" onclick="updateData()">By Delivery Method</button>
@@ -97,7 +116,24 @@ body {
 
 <script src="https://d3js.org/d3.v3.min.js"></script>
 <script src="https://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+<!-- Load ring note -->
+<script src="d3-ring-note.js"></script>
+
 <script>
+
+var annotations = [
+  {
+    "cx": 560,
+    "cy": 0,
+    "r": 5,
+    "text": "In 2017, August had the highest percentage of births",
+    "textWidth": 150,
+    "textOffset": [
+      -50,
+      -10
+    ]
+  }
+];
 
 var margin = {top: 40, right: 20, bottom: 30, left: 40},
     width = 960 - margin.left - margin.right,
@@ -141,6 +177,9 @@ var svg = d3.select("body").append("svg")
 
 svg.call(tip);
 
+var ringNote = d3.ringNote()
+  .draggable(false);
+
 d3.csv("birth_data/birth_data_by_month.csv", type, function(error, data) {
   //x.domain(data.map(function(d) { return d.Month; }));
   x.domain(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]);
@@ -160,7 +199,7 @@ d3.csv("birth_data/birth_data_by_month.csv", type, function(error, data) {
       .attr("dy", ".71em")
       .style("text-anchor", "end")
       .text("% of Births");
-
+	  
   svg.selectAll(".bar")
       .data(data)
     .enter().append("rect")
@@ -171,8 +210,14 @@ d3.csv("birth_data/birth_data_by_month.csv", type, function(error, data) {
       .attr("height", function(d) { return height - y(d.Pct_Of_Births); })
       .on('mouseover', tip.show)
       .on('mouseout', tip.hide)
+	  
+  svg.append("g")
+     .attr("class", "annotations")
+     .call(ringNote, annotations);
 
 });
+
+
 
 function type(d) {
   d.frequency = +d.frequency;
