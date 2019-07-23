@@ -76,7 +76,7 @@ body {
 }
 
 .btn-group .button:focus {
-  background-color: forestgreen;
+  background-color: LightSlateGray ;
 }
 
 .annotation circle {
@@ -103,16 +103,26 @@ body {
 <body>
 
 <h1>2017 US Child Births</h1>
-<p>Source</p>
+
  
 <div class="btn-group">
   <div>Select a view:</div>
-  <button class="button" onclick="originalData()">By Month</button>
-  <button class="button" onclick="updateData()">By Weekday</button>
+  <button class="button" onclick="by_month_data()">By Month</button>
+  <button class="button" onclick="by_day_data()">By Weekday</button>
   <button class="button" onclick="updateData()">By Delivery Method</button>
 </div>
 
 <p style="clear:both"><br></p>
+
+<div class="narrative_view">
+</div>
+
+<p>Source:</p>
+<p>United States Department of Health and Human Services (US DHHS), <br>
+Centers for Disease Control and Prevention (CDC), <br>
+National Center for Health Statistics (NCHS), <br>
+Division of Vital Statistics, <br>
+Natality public-use data on CDC WONDER Online Database</p>
 
 <script src="https://d3js.org/d3.v3.min.js"></script>
 <script src="https://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
@@ -120,20 +130,6 @@ body {
 <script src="d3-ring-note.js"></script>
 
 <script>
-
-var annotations = [
-  {
-    "cx": 560,
-    "cy": 0,
-    "r": 5,
-    "text": "In 2017, August had the highest percentage of births",
-    "textWidth": 150,
-    "textOffset": [
-      -50,
-      -10
-    ]
-  }
-];
 
 var margin = {top: 40, right: 20, bottom: 30, left: 40},
     width = 960 - margin.left - margin.right,
@@ -169,59 +165,155 @@ var tip = d3.tip()
 		+"</span></p>";
   })
 
-var svg = d3.select("body").append("svg")
+
+by_month_data();
+//by_day_data();  
+  
+function by_month_data() {
+	d3.selectAll('.chart_area').remove();
+
+	var annotations = [
+	  {
+		"cx": 560,
+		"cy": 0,
+		"r": 5,
+		"text": "In 2017, August had the highest percentage of births",
+		"textWidth": 150,
+		"textOffset": [
+		  -50,
+		  -10
+		]
+	  }
+	];
+
+
+  var svg = d3.select(".narrative_view").append("svg")
+	.attr("class", "chart_area")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-svg.call(tip);
+	svg.call(tip);
 
-var ringNote = d3.ringNote()
-  .draggable(false);
+	var ringNote = d3.ringNote()
+	  .draggable(false);
 
-d3.csv("birth_data/birth_data_by_month.csv", type, function(error, data) {
-  //x.domain(data.map(function(d) { return d.Month; }));
-  x.domain(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]);
-  y.domain([0, d3.max(data, function(d) { return d.Pct_Of_Births; })]);
+	d3.csv("birth_data/birth_data_by_month.csv", function(error, data) {
+	  //x.domain(data.map(function(d) { return d.Month; }));
+	  x.domain(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]);
+	  y.domain([0, d3.max(data, function(d) { return d.Pct_Of_Births; })]);
 
-  svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
+	  svg.append("g")
+		  .attr("class", "x axis")
+		  .attr("transform", "translate(0," + height + ")")
+		  .call(xAxis);
 
-  svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
-    .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("% of Births");
+	  svg.append("g")
+		  .attr("class", "y axis")
+		  .call(yAxis)
+		.append("text")
+		  .attr("transform", "rotate(-90)")
+		  .attr("y", 6)
+		  .attr("dy", ".71em")
+		  .style("text-anchor", "end")
+		  .text("% of Births");
+		  
+	  svg.selectAll(".bar")
+		  .data(data)
+		.enter().append("rect")
+		  .attr("class", "bar")
+		  .attr("x", function(d) { return x(d.Month); })
+		  .attr("width", x.rangeBand())
+		  .attr("y", function(d) { return y(d.Pct_Of_Births); })
+		  .attr("height", function(d) { return height - y(d.Pct_Of_Births); })
+		  .on('mouseover', tip.show)
+		  .on('mouseout', tip.hide)
+		  
+	  svg.append("g")
+		 .attr("class", "annotations")
+		 .call(ringNote, annotations);
+
+	});
+} 
+
+
+function by_day_data() {
+	d3.selectAll('.chart_area').remove();
+	var annotations = [
+	  {
+		"cx": 700,
+		"cy": 140,
+		"r": 5,
+		"text": "Weekend days had a much lower percentage of births than weekdays in 2017",
+		"textWidth": 150,
+		"textOffset": [
+		  40,
+		  -40
+		]
+	  },{
 	  
-  svg.selectAll(".bar")
-      .data(data)
-    .enter().append("rect")
-      .attr("class", "bar")
-      .attr("x", function(d) { return x(d.Month); })
-      .attr("width", x.rangeBand())
-      .attr("y", function(d) { return y(d.Pct_Of_Births); })
-      .attr("height", function(d) { return height - y(d.Pct_Of_Births); })
-      .on('mouseover', tip.show)
-      .on('mouseout', tip.hide)
-	  
-  svg.append("g")
-     .attr("class", "annotations")
-     .call(ringNote, annotations);
+		"cx": 830,
+		"cy": 170,
+		"r": 5,
+		"text": " ",
+		"textWidth": 150,
+		"textOffset": [
+		  -50,
+		  -68
+		]
+	  }
+	];
 
-});
+  var svg = d3.select(".narrative_view").append("svg")
+	.attr("class", "chart_area")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+	svg.call(tip);
 
+	var ringNote = d3.ringNote()
+	  .draggable(false);
 
-function type(d) {
-  d.frequency = +d.frequency;
-  return d;
-}
+	d3.csv("birth_data/birth_data_by_weekday.csv", function(error, data) {
+	  //x.domain(data.map(function(d) { return d.Month; }));
+	  x.domain(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]);
+	  y.domain([0, d3.max(data, function(d) { return d.Pct_Of_Births; })]);
+
+	  svg.append("g")
+		  .attr("class", "x axis")
+		  .attr("transform", "translate(0," + height + ")")
+		  .call(xAxis);
+
+	  svg.append("g")
+		  .attr("class", "y axis")
+		  .call(yAxis)
+		.append("text")
+		  .attr("transform", "rotate(-90)")
+		  .attr("y", 6)
+		  .attr("dy", ".71em")
+		  .style("text-anchor", "end")
+		  .text("% of Births");
+		  
+	  svg.selectAll(".bar")
+		  .data(data)
+		.enter().append("rect")
+		  .attr("class", "bar")
+		  .attr("x", function(d) { return x(d.Weekday); })
+		  .attr("width", x.rangeBand())
+		  .attr("y", function(d) { return y(d.Pct_Of_Births); })
+		  .attr("height", function(d) { return height - y(d.Pct_Of_Births); })
+		  .on('mouseover', tip.show)
+		  .on('mouseout', tip.hide)
+		  
+	  svg.append("g")
+		 .attr("class", "annotations")
+		 .call(ringNote, annotations);
+
+	});
+} 
+
 
 </script>
