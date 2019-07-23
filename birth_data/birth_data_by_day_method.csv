@@ -1,0 +1,17 @@
+"Year","Weekday","Weekday.Code","Delivery.Method","Births","Total_Births","Pct_Of_Births"
+2017,"Friday","6","Cesarean",212549,612505,0.347015942726998
+2017,"Friday","6","Non-Cesarean",399956,612505,0.652984057273002
+2017,"Monday","2","Cesarean",203365,572409,0.355279179747348
+2017,"Monday","2","Non-Cesarean",369044,572409,0.644720820252652
+2017,"Saturday","7","Cesarean",101808,426569,0.238667132398276
+2017,"Saturday","7","Non-Cesarean",324761,426569,0.761332867601724
+2017,"Sunday","1","Cesarean",87480,379709,0.230386954220205
+2017,"Sunday","1","Non-Cesarean",292229,379709,0.769613045779795
+2017,"Thursday","5","Cesarean",206960,621888,0.332793043120305
+2017,"Thursday","5","Non-Cesarean",414928,621888,0.667206956879695
+2017,"Tuesday","3","Cesarean",211632,621061,0.340758798250091
+2017,"Tuesday","3","Non-Cesarean",409429,621061,0.659241201749909
+2017,"Unknown","9","Cesarean",0,0,NA
+2017,"Unknown","9","Non-Cesarean",0,0,NA
+2017,"Wednesday","4","Cesarean",208545,621359,0.335627229991036
+2017,"Wednesday","4","Non-Cesarean",412814,621359,0.664372770008964
