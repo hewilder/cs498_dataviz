@@ -21,6 +21,10 @@ body {
   fill: lightsteelblue ;
 }
 
+.stacked_bar:hover {
+  fill: grey;
+}
+
 .x.axis path {
   display: none;
 }
@@ -109,7 +113,7 @@ body {
   <div>Select a view:</div>
   <button class="button" id="default_selection" onclick="by_month_data()">By Month</button>
   <button class="button" onclick="by_day_data()">By Weekday</button>
-  <button class="button" onclick="updateData()">By Delivery Method</button>
+  <button class="button" onclick="by_day_method_data()">By Day/Delivery Method</button>
 </div>
 
 <p style="clear:both"><br></p>
@@ -139,7 +143,7 @@ function default_focus()
 
 <script>
 
-var margin = {top: 40, right: 20, bottom: 30, left: 40},
+var margin = {top: 40, right: 20, bottom: 30, left: 60},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
@@ -152,6 +156,9 @@ var x = d3.scale.ordinal()
 var y = d3.scale.linear()
     .range([height, 0]);
 
+var colors = ["b33040", "#d25c4d"];	
+//var colors = d3.scale.category10();
+	
 var xAxis = d3.svg.axis()
     .scale(x)
     .orient("bottom");
@@ -160,6 +167,10 @@ var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left")
     .tickFormat(formatPercent);
+	
+var yAxis_num = d3.svg.axis()
+    .scale(y)
+    .orient("left");
 
 var tip = d3.tip()
   .attr('class', 'd3-tip')
@@ -182,7 +193,7 @@ function by_month_data() {
 
 	var annotations = [
 	  {
-		"cx": 560,
+		"cx": 550,
 		"cy": 0,
 		"r": 5,
 		"text": "In 2017, August had the highest percentage of births",
@@ -222,10 +233,13 @@ function by_month_data() {
 		  .call(yAxis)
 		.append("text")
 		  .attr("transform", "rotate(-90)")
-		  .attr("y", 6)
-		  .attr("dy", ".71em")
-		  .style("text-anchor", "end")
-		  .text("% of Births");
+		  .attr("y", 0 - margin.left)
+		  .attr("x",0 - (height / 2))
+		  .attr("dy", "1em")
+		  //.attr("y", 6)
+		  //.attr("dy", ".71em")
+		  .style("text-anchor", "middle")
+		  .text("% of 2017 Births");
 		  
 	  svg.selectAll(".bar")
 		  .data(data)
@@ -250,8 +264,8 @@ function by_day_data() {
 	d3.selectAll('.chart_area').remove();
 	var annotations = [
 	  {
-		"cx": 700,
-		"cy": 140,
+		"cx": 690,
+		"cy": 135,
 		"r": 5,
 		"text": "Weekend days had a much lower percentage of births than weekdays in 2017",
 		"textWidth": 150,
@@ -261,7 +275,7 @@ function by_day_data() {
 		]
 	  },{
 	  
-		"cx": 830,
+		"cx": 810,
 		"cy": 170,
 		"r": 5,
 		"text": " ",
@@ -300,10 +314,11 @@ function by_day_data() {
 		  .call(yAxis)
 		.append("text")
 		  .attr("transform", "rotate(-90)")
-		  .attr("y", 6)
-		  .attr("dy", ".71em")
-		  .style("text-anchor", "end")
-		  .text("% of Births");
+		  .attr("y", 0 - margin.left)
+		  .attr("x",0 - (height / 2))
+		  .attr("dy", "1em")
+		  .style("text-anchor", "middle")
+		  .text("% of 2017 Births");
 		  
 	  svg.selectAll(".bar")
 		  .data(data)
@@ -322,6 +337,125 @@ function by_day_data() {
 
 	});
 } 
+
+function by_day_method_data() {
+		d3.selectAll('.chart_area').remove();
+	var annotations = [
+	  {
+		"cx": 690,
+		"cy": 150,
+		"r": 5,
+		"text": "A large portion of the weekday/ weekend difference is due to a much lower number of Cesarean deliveries on the weekend",
+		"textWidth": 150,
+		"textOffset": [
+		  40,
+		  -40
+		]
+	  },{
+	  
+		"cx": 810,
+		"cy": 180,
+		"r": 5,
+		"text": " ",
+		"textWidth": 150,
+		"textOffset": [
+		  -50,
+		  -68
+		]
+	  }
+	];
+
+  var group_vals = ["Non-Cesarean_Births", "Cesarean_Births"];	
+	
+  var svg = d3.select(".narrative_view").append("svg")
+	.attr("class", "chart_area")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+	svg.call(tip);
+
+	var ringNote = d3.ringNote()
+	  .draggable(false);
+
+	d3.csv("birth_data/birth_data_by_day_method_wide.csv", function(error, dataset) {
+	
+	  var layers = d3.layout.stack()(group_vals.map(function(group) {
+		  return dataset.map(function(d) {
+			return {x: d.Weekday, y: +d[group]/1000};
+		  });
+		}));
+	
+	  //x.domain(data.map(function(d) { return d.Month; }));
+	  x.domain(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]);
+	  y.domain([0, d3.max(layers[layers.length - 1], function(d) { return d.y0 + d.y; })]).nice();
+					
+	  console.log(y);
+
+	  svg.append("g")
+		  .attr("class", "x axis")
+		  .attr("transform", "translate(0," + height + ")")
+		  .call(xAxis);
+
+	  svg.append("g")
+		  .attr("class", "y axis")
+		  .call(yAxis_num)
+		.append("text")
+		  .attr("transform", "rotate(-90)")
+		  .attr("y", 0 - margin.left)
+		  .attr("x",0 - (height / 2))
+		  .attr("dy", "1em")
+		  .style("text-anchor", "middle")
+		  .text("# of Births (Thousands)");
+		  
+	   var layer = svg.selectAll(".layer")
+		  .data(layers)
+		.enter().append("g")
+		  .attr("class", "layer")
+		  .style("fill", function(d, i) { return colors[i]; });
+
+	  layer.selectAll("rect")
+		  .data(function(d) { return d; })
+		.enter().append("rect")
+		  .attr("class", "stacked_bar")
+		  .attr("x", function(d) { return x(d.x); })
+		  .attr("y", function(d) { return y(d.y + d.y0); })
+		  .attr("height", function(d) { return y(d.y0) - y(d.y + d.y0); })
+		  .attr("width", x.rangeBand() - 1);
+		  
+	  var legend = svg.selectAll(".legend")
+		  .data(colors)
+		  .enter().append("g")
+		  .attr("class", "legend")
+		  .attr("transform", function(d, i) { return "translate(" + i * 175 + ", -15)"; });
+		 
+		legend.append("rect")
+		  .attr("x", width - 300)
+		  .attr("width", 18)
+		  .attr("height", 18)
+		  .style("fill", function(d, i) {return colors.slice().reverse()[i];});
+		 
+		legend.append("text")
+		  .attr("x", width - 280)
+		  .attr("y", 9)
+		  .attr("dy", ".35em")
+		  .style("text-anchor", "start")
+		  .text(function(d, i) { 
+			switch (i) {
+			  case 0: return "Non-Cesarean Deliveries";
+			  case 1: return "Cesarean Deliveries";
+			}
+		  });
+	  
+		  
+	  svg.append("g")
+		 .attr("class", "annotations")
+		 .call(ringNote, annotations);
+
+	});
+} 
+
 
 
 </script>
