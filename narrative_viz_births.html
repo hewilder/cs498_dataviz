@@ -18,11 +18,11 @@ body {
 }
 
 .bar:hover {
-  fill: lightsteelblue ;
+  opacity: 0.75;
 }
 
 .stacked_bar:hover {
-  fill: grey;
+  opacity: 0.80;
 }
 
 .x.axis path {
@@ -59,8 +59,8 @@ body {
 }
 
 .btn-group .button {
-  background-color: steelblue; 
-  border: 1px solid white;
+  background-color: #808080 ; 
+  border: 1px solid white ;
   color: white;
   padding: 10px 15px;
   text-align: center;
@@ -76,11 +76,12 @@ body {
 }
 
 .btn-group .button:hover {
-  background-color: lightsteelblue;
+  background-color: #b3b3b3 ;
 }
 
 .btn-group .button:focus {
-  background-color: LightSlateGray ;
+  background-color: #404040  ;
+  color: white;
 }
 
 .annotation circle {
@@ -156,7 +157,7 @@ var x = d3.scale.ordinal()
 var y = d3.scale.linear()
     .range([height, 0]);
 
-var colors = ["b33040", "#d25c4d"];	
+var colors = ["#4682B4", "#6d8132"];	
 //var colors = d3.scale.category10();
 	
 var xAxis = d3.svg.axis()
@@ -422,7 +423,25 @@ function by_day_method_data() {
 		  .attr("x", function(d) { return x(d.x); })
 		  .attr("y", function(d) { return y(d.y + d.y0); })
 		  .attr("height", function(d) { return y(d.y0) - y(d.y + d.y0); })
-		  .attr("width", x.rangeBand() - 1);
+		  .attr("width", x.rangeBand() - 1)
+		  .on("mouseover", function() { tooltip.style("display", null); })
+		  .on("mouseout", function() { tooltip.style("display", "none"); })
+		  .on("mousemove", function(d) {
+			//var xPosition = d3.mouse(this)[0] - 15;
+			var xPosition = x(d.x) + x.rangeBand() / 2 - 15;
+			//var yPosition = d3.mouse(this)[1] - 25;
+			var yPosition = y(d.y + d.y0)-20;
+			tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
+			tooltip.select("text").html("Births: " + formatComma(d.y*1000));
+			//tooltip.select("text").html("<p><strong>% of Births:</strong> <span style='color:black'>"); 
+				//	+ formatPercent(0) 
+				//	+ "</span></p>"
+				//	+"<p><span style='color:grey'>Total Births: "
+				//	+ formatComma(d.y*1000)
+				//	+"</span></p>"
+			//)
+			tooltip.style("text-anchor", "middle");
+		 });
 		  
 	  var legend = svg.selectAll(".legend")
 		  .data(colors)
@@ -434,7 +453,7 @@ function by_day_method_data() {
 		  .attr("x", width - 300)
 		  .attr("width", 18)
 		  .attr("height", 18)
-		  .style("fill", function(d, i) {return colors.slice().reverse()[i];});
+		  .style("fill", function(d, i) {return colors.slice()[i];});
 		 
 		legend.append("text")
 		  .attr("x", width - 280)
@@ -452,6 +471,27 @@ function by_day_method_data() {
 	  svg.append("g")
 		 .attr("class", "annotations")
 		 .call(ringNote, annotations);
+		 
+	  
+	  // Prep the tooltip bits, initial display is hidden
+		var tooltip = svg.append("g")
+		  .attr("class", "tooltip")
+		  .style("display", "none");
+			
+		/*tooltip.append("rect")
+		  .attr("width", 100)
+		  .attr("height", 20)
+		  .attr("fill", "white")
+		  .style("opacity", 0.5);
+		  */
+		
+
+		tooltip.append("text")
+		  .attr("x", 0)
+		  .attr("dy", "1.2em")
+		  .style("text-anchor", "middle")
+		  .attr("font-size", "12px")
+		  .attr("font-weight", "bold");
 
 	});
 } 
