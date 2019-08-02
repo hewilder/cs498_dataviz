@@ -255,7 +255,7 @@ function by_month_data() {
 	d3.csv("birth_data/birth_data_by_month.csv", function(error, data) {
 	  //x.domain(data.map(function(d) { return d.Month; }));
 	  x.domain(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]);
-	  y.domain([0, d3.max(data, function(d) { return d.Pct_Of_Births; })]);
+	  y.domain([0, d3.max(data, function(d) { return d.Births/1000; })]);
 
 	  svg.append("g")
 		  .attr("class", "x axis")
@@ -264,7 +264,7 @@ function by_month_data() {
 
 	  svg.append("g")
 		  .attr("class", "y axis")
-		  .call(yAxis)
+		  .call(yAxis_num)
 		.append("text")
 		  .attr("transform", "rotate(-90)")
 		  .attr("y", 0 - margin.left)
@@ -273,11 +273,11 @@ function by_month_data() {
 		  //.attr("y", 6)
 		  //.attr("dy", ".71em")
 		  .style("text-anchor", "middle")
-		  .text("% of 2017 Births");
+		  .text("# of 2017 Births (Thousands)");
 	  
 	  svg.append("text")
 		.attr("x", (width / 2))             
-		.attr("y", 0 - (margin.top / 2))
+		.attr("y", 0 - (margin.top / 3))
 		.attr("text-anchor", "middle")  
 		.style("font-size", "16px") 
 		.style("font-weight", "bold")   
@@ -290,8 +290,8 @@ function by_month_data() {
 		  .attr("class", "bar")
 		  .attr("x", function(d) { return x(d.Month); })
 		  .attr("width", x.rangeBand())
-		  .attr("y", function(d) { return y(d.Pct_Of_Births); })
-		  .attr("height", function(d) { return height - y(d.Pct_Of_Births); })
+		  .attr("y", function(d) { return y(d.Births/1000); })
+		  .attr("height", function(d) { return height - y(d.Births/1000); })
 		  .on('mouseover', tip.show)
 		  .on('mouseout', tip.hide)
 		  
