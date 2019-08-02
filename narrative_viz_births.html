@@ -526,6 +526,14 @@ function by_day_method_data() {
 		  .style("fill", function(d, i) { return colors[i]; });
 		  
 	  
+	 svg.append("text")
+		.attr("x", (width / 2))             
+		.attr("y", 0 - (margin.top / 2))
+		.attr("text-anchor", "middle")  
+		.style("font-size", "16px") 
+		.style("text-decoration", "bold")  
+		.text("Delivery Method by Day of Week");	
+		
 	  layer.selectAll("rect")
 		  /*.data(function(d) {
 			  console.log("value");
@@ -566,7 +574,7 @@ function by_day_method_data() {
 				divTooltip.select("text").html("<tspan x=20>% of Day's Births: "
 					+ formatPercent(d.percent) 
 					+ "</tspan>"
-					+"<tspan x=20 y=10>Total Births: "
+					+"<tspan x=20 y=10 style='color:grey'>Total Births: "
 					+ formatComma(d.y*1000)
 					+"</tspan>"
 				);
