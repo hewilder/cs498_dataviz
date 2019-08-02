@@ -103,6 +103,23 @@ body {
                 0 -2px 2px #fff;
 }
 
+.toolTip {
+	border-radius: 2px;
+}
+
+/* Creates a small triangle extender for the tooltip? */	
+.toolTip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}	
+	
 .toolTip text {
 	color: white;
 
@@ -110,7 +127,6 @@ body {
 
 .toolTip tspan {
 	font: bold 10px sans-serif; 
-	fill: white; }
 }
 
 .toolTip2 text {
@@ -613,7 +629,7 @@ function by_day_method_data() {
                 element = elements[l].__data__
                 value = element.y1 - element.y0
                 //divTooltip.select("text").html("<tspan x=30 dx=0>"+element.name+"</tspan><br/><tspan x=40 dx=0 y=1>"+element.y+"</tspan>");
-				divTooltip.select("text").html("<tspan x=20>% of Day's Births: "
+				divTooltip.select("text").html("<tspan x=20 fill='white'>% of Day's Births: "
 					+ formatPercent(d.percent) 
 					+ "</tspan>"
 					+"<tspan x=20 y=10 fill='grey'>Total Births: "
