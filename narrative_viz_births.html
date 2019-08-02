@@ -68,6 +68,7 @@ body {
   display: inline-block;
   font-size: 10px;
   cursor: pointer;
+  box-shadow: 8px 8px 8px lightsteelblue;
   float: left;
 }
 
@@ -101,6 +102,32 @@ body {
                 2px 0 2px #fff, 
                 0 -2px 2px #fff;
 }
+
+.toolTip text {
+	color: white;
+
+}
+
+.toolTip tspan {
+	font: bold 10px sans-serif; 
+	fill: white; }
+}
+
+.toolTip2 text {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        position: absolute;
+        display: none;
+        width: auto;
+        height: auto;
+        background: none repeat scroll 0 0 white;
+        border: 0 none;
+        border-radius: 8px 8px 8px 8px;
+        box-shadow: -3px 3px 15px #888888;
+        color: black;
+        font: 12px sans-serif;
+        padding: 5px;
+        text-align: center;
+    }
 </style>
 <head>
 <title>CS 498 Narrative Viz</title>
@@ -130,9 +157,10 @@ National Center for Health Statistics (NCHS), <br>
 Division of Vital Statistics, <br>
 Natality public-use data on CDC WONDER Online Database</p>
 
-<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://d3js.org/d3.v3.min.js"></script> 
+<!-- Load d3.tip - approved library per Piazza @426 -->
 <script src="https://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
-<!-- Load ring note -->
+<!-- Load ring note - approved library per Piazza @426 -->
 <script src="d3-ring-note.js"></script>
 
 <script type="text/javascript">
@@ -157,7 +185,7 @@ var x = d3.scale.ordinal()
 var y = d3.scale.linear()
     .range([height, 0]);
 
-var colors = ["#4682B4", "#6d8132"];	
+var colors = ["#4682B4", "#ce7d2c"];	
 //var colors = d3.scale.category10();
 	
 var xAxis = d3.svg.axis()
@@ -185,6 +213,11 @@ var tip = d3.tip()
 		+"</span></p>";
   })
 
+// Define 'div' for tooltips
+var stacked_tip = d3.select(".chart_area").select("g")
+	.append("div")  // declare the tooltip div 
+	.attr("class", "tooltip")              // apply the 'tooltip' class
+	.style("opacity", 0);   
 
 by_month_data();
 //by_day_data();  
@@ -367,6 +400,7 @@ function by_day_method_data() {
 	];
 
   var group_vals = ["Non-Cesarean_Births", "Cesarean_Births"];	
+  var group_label_vals = ["Non-Cesarean_Pct_Of_Births", "Cesarean_Pct_Of_Births"];	
 	
   var svg = d3.select(".narrative_view").append("svg")
 	.attr("class", "chart_area")
@@ -379,19 +413,89 @@ function by_day_method_data() {
 
 	var ringNote = d3.ringNote()
 	  .draggable(false);
+	  
+	var stacked_tip = d3.select(".chart_area")
+	    .select("g")
+	    //.append("div")
+		.append("g")
+		.attr("class", "tooltip")              // apply the 'tooltip' class
+		.style("opacity", 0); 	  
+
 
 	d3.csv("birth_data/birth_data_by_day_method_wide.csv", function(error, dataset) {
 	
+      console.log(dataset);	
+	  var dataset_test = dataset;
+	  
+	  //var key_vals = d3.keys(dataset_test[0]).filter(function(key) { return key !== "Year" & key !== "Year"; });
+	  
+	  //console.log(key_vals);	
+	  
+	  var colorRange = d3.scale.category20()
+	  var color = d3.scale.ordinal()
+            .range(colorRange.range());
+	  
+	  color.domain(group_vals);
+	  dataset_test.forEach(function(d) {
+        var y0 = 0;
+        d.values = color.domain().map(function(name) { return {name: name, y0: y0, y: +d[name]/1000, y1: y0 += +d[name]/1000, x: d.Weekday}; });
+		d.label_values = group_label_vals.map(function(name) { return {pct_name: name, percent: +d[name]}; });
+        d.total = d.values[d.values.length - 1].y1;
+	  });
+	
+	  console.log("processed data");
+	  console.log(dataset_test);
+	  //var data_point = dataset_test[0]
+	  
+	  var array_length = dataset_test[0].label_values.length;
+	  
+	  var i;
+	  var data_row = [];
+	  for (i = 0; i < array_length; i++) { 
+		 data_row[i] = Object.assign(dataset_test[0].label_values[i], dataset_test[0].values[i]);
+	  }
+	  
+	  console.log("--start loop --");
+	  var i;
+	  var j;
+	  var trans_data = [];
+	  for (i = 0; i < dataset_test.length; i++) {
+		console.log(i);
+		console.log("--");
+		for (j = 0; j < dataset_test[i].label_values.length; j++) {
+			console.log(j);
+			if (i==0) {
+				trans_data[j] = [];
+			}
+			trans_data[j][i] = Object.assign(dataset_test[i].label_values[j], dataset_test[i].values[j]);
+		}
+		console.log("--");
+	  }
+	  console.log(trans_data);
+	  console.log("--end loop --");
+	  
+	  //var data_row = Object.assign(dataset_test[0].label_values[0], dataset_test[0].values[0])
+	  console.log(data_row);
+	  
+	  console.log("array length");
+	  console.log(dataset_test[0].label_values.length);
+	
 	  var layers = d3.layout.stack()(group_vals.map(function(group) {
 		  return dataset.map(function(d) {
-			return {x: d.Weekday, y: +d[group]/1000};
+			return {x: d.Weekday, y: +d[group]/1000, y_ces: d.Cesarean_Pct_Of_Births};
 		  });
 		}));
+		
+	  console.log("layers");	
+	  console.log(layers);
+	  
+	  layers = trans_data;
 	
 	  //x.domain(data.map(function(d) { return d.Month; }));
 	  x.domain(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]);
 	  y.domain([0, d3.max(layers[layers.length - 1], function(d) { return d.y0 + d.y; })]).nice();
-					
+	  //y.domain([0, d3.max(dataset_test, function(d) { return d.total; })]);
+		
 	  console.log(y);
 
 	  svg.append("g")
@@ -410,13 +514,29 @@ function by_day_method_data() {
 		  .style("text-anchor", "middle")
 		  .text("# of Births (Thousands)");
 		  
+	   var stacked_tip = svg.append("g")
+		.attr("class", "tooltip")              // apply the 'tooltip' class
+		.style("opacity", 0); 
+		  
 	   var layer = svg.selectAll(".layer")
 		  .data(layers)
+		  //.data(dataset_test)
 		.enter().append("g")
 		  .attr("class", "layer")
 		  .style("fill", function(d, i) { return colors[i]; });
-
+		  
+	  
 	  layer.selectAll("rect")
+		  /*.data(function(d) {
+			  console.log("value");
+			  var i;
+			  var data_row = [];
+			  for (i = 0; i < d.label_values.length; i++) { 
+				 data_row[i] = Object.assign(d.label_values[i], d.values[i]);
+			  }
+			  console.log(data_row);
+			  return data_row;
+		  ; })*/
 		  .data(function(d) { return d; })
 		.enter().append("rect")
 		  .attr("class", "stacked_bar")
@@ -424,15 +544,41 @@ function by_day_method_data() {
 		  .attr("y", function(d) { return y(d.y + d.y0); })
 		  .attr("height", function(d) { return y(d.y0) - y(d.y + d.y0); })
 		  .attr("width", x.rangeBand() - 1)
-		  .on("mouseover", function() { tooltip.style("display", null); })
-		  .on("mouseout", function() { tooltip.style("display", "none"); })
-		  .on("mousemove", function(d) {
+		  /*.on('mouseover', stacked_tip.show)
+		  .on('mouseout', stacked_tip.hide);*/
+		  .on("mouseover", function() { tooltip.style("display", "inline"); })
+		  .on("mouseout", function() { tooltip.style("display", "inline"); })
+		  .on("mousemove", function(d){
+				var xPosition = x(d.x) + x.rangeBand()/2-20;
+				//var yPosition = d3.mouse(this)[1] - 25;
+				var yPosition = y(d.y + d.y0)-20;
+		  
+                //divTooltip.style("left", d3.event.pageX+10+"px");
+                //divTooltip.style("top", d3.event.pageY-25+"px");
+                divTooltip.style("display", "inline-block");
+				divTooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
+                var elements = document.querySelectorAll(':hover');
+                l = elements.length
+                l = l-1
+                element = elements[l].__data__
+                value = element.y1 - element.y0
+                //divTooltip.select("text").html("<tspan x=30 dx=0>"+element.name+"</tspan><br/><tspan x=40 dx=0 y=1>"+element.y+"</tspan>");
+				divTooltip.select("text").html("<tspan x=20>% of Day's Births: "
+					+ formatPercent(d.percent) 
+					+ "</tspan>"
+					+"<tspan x=20 y=10>Total Births: "
+					+ formatComma(d.y*1000)
+					+"</tspan>"
+				);
+            });
+		/*.on("mousemove", function(d) {
 			//var xPosition = d3.mouse(this)[0] - 15;
 			var xPosition = x(d.x) + x.rangeBand() / 2 - 15;
 			//var yPosition = d3.mouse(this)[1] - 25;
 			var yPosition = y(d.y + d.y0)-20;
 			tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-			tooltip.select("text").html("Births: " + formatComma(d.y*1000));
+			//tooltip.select("text").html("Births: " + formatComma(d.y*1000));
+			tooltip.html("Births: " + formatComma(d.y*1000));
 			//tooltip.select("text").html("<p><strong>% of Births:</strong> <span style='color:black'>"); 
 				//	+ formatPercent(0) 
 				//	+ "</span></p>"
@@ -441,7 +587,8 @@ function by_day_method_data() {
 				//	+"</span></p>"
 			//)
 			tooltip.style("text-anchor", "middle");
-		 });
+			
+		 }); */
 		  
 	  var legend = svg.selectAll(".legend")
 		  .data(colors)
@@ -459,6 +606,7 @@ function by_day_method_data() {
 		  .attr("x", width - 280)
 		  .attr("y", 9)
 		  .attr("dy", ".35em")
+		  .attr("class", "d3-tip")
 		  .style("text-anchor", "start")
 		  .text(function(d, i) { 
 			switch (i) {
@@ -475,23 +623,31 @@ function by_day_method_data() {
 	  
 	  // Prep the tooltip bits, initial display is hidden
 		var tooltip = svg.append("g")
-		  .attr("class", "tooltip")
+		  .attr("class", "toolTip")
+		  //.attr("class", "annotation")
+		  //.style()
 		  .style("display", "none");
 			
-		/*tooltip.append("rect")
-		  .attr("width", 100)
-		  .attr("height", 20)
-		  .attr("fill", "white")
-		  .style("opacity", 0.5);
-		  */
-		
-
+		tooltip.append("rect")
+		  .attr("x", -40)
+		  .attr("y", -35)
+		  .attr("width", 120)
+		  .attr("height", 50)
+		  .attr("fill", "black")
+		  .style("opacity", 0.75);
+		  
 		tooltip.append("text")
-		  .attr("x", 0)
-		  .attr("dy", "1.2em")
+		  .attr("x", 80)
+		  //.attr("y", -10)
+		  .style("color", "white")
+		  .attr("dx", "0")
+		  .attr("dy", "-1.2em")
 		  .style("text-anchor", "middle")
 		  .attr("font-size", "12px")
 		  .attr("font-weight", "bold");
+		  
+		  
+		var divTooltip = tooltip;
 
 	});
 } 

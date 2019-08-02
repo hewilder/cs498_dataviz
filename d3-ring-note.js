@@ -1,3 +1,5 @@
+//source: https://raw.githubusercontent.com/armollica/d3-ring-note/master/d3-ring-note.js
+
 d3.ringNote = function() {
   var draggable = false,
       controlRadius = 15;
