@@ -345,8 +345,8 @@ function by_day_data() {
 	d3.csv("birth_data/birth_data_by_weekday.csv", function(error, data) {
 	  //x.domain(data.map(function(d) { return d.Month; }));
 	  x.domain(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]);
-	  y.domain([0, d3.max(data, function(d) { return d.Births/1000; })]);
-	  //y.domain([0, 650]);
+	  //y.domain([0, d3.max(data, function(d) { return d.Births/1000; })]);
+	  y.domain([0, 650]);
 
 	  svg.append("g")
 		  .attr("class", "x axis")
@@ -384,10 +384,10 @@ function by_day_data() {
 		  .on('mouseout', tip.hide)
 		  
 	  var legend = svg.selectAll(".legend")
-		  .data(colors)
+		  .data(colors[0])
 		  .enter().append("g")
 		  .attr("class", "legend")
-		  .attr("transform", function(d, i) { return "translate(" + i * 175 + ", -15)"; });
+		  .attr("transform", function(d, i) { return "translate(" + 1 * 175 + ", -15)"; });
 		 
 		legend.append("rect")
 		  .attr("x", width - 300)
@@ -534,8 +534,9 @@ function by_day_method_data() {
 	
 	  //x.domain(data.map(function(d) { return d.Month; }));
 	  x.domain(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]);
-	  y.domain([0, d3.max(layers[layers.length - 1], function(d) { return d.y0 + d.y; })]).nice();
+	  //y.domain([0, d3.max(layers[layers.length - 1], function(d) { return d.y0 + d.y; })]).nice();
 	  //y.domain([0, d3.max(dataset_test, function(d) { return d.total; })]);
+	  y.domain([0, 650]);
 		
 	  console.log(y);
 
