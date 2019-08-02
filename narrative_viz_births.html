@@ -274,7 +274,16 @@ function by_month_data() {
 		  //.attr("dy", ".71em")
 		  .style("text-anchor", "middle")
 		  .text("% of 2017 Births");
-		  
+	  
+	  svg.append("text")
+		.attr("x", (width / 2))             
+		.attr("y", 0 - (margin.top / 2))
+		.attr("text-anchor", "middle")  
+		.style("font-size", "16px") 
+		.style("text-decoration", "bold")  
+		.text("Births by Month");	
+		
+		
 	  svg.selectAll(".bar")
 		  .data(data)
 		.enter().append("rect")
@@ -354,6 +363,14 @@ function by_day_data() {
 		  .style("text-anchor", "middle")
 		  .text("% of 2017 Births");
 		  
+	  svg.append("text")
+		.attr("x", (width / 2))             
+		.attr("y", 0 - (margin.top / 2))
+		.attr("text-anchor", "middle")  
+		.style("font-size", "16px") 
+		.style("text-decoration", "bold")  
+		.text("Births by Day of Week");	
+		
 	  svg.selectAll(".bar")
 		  .data(data)
 		.enter().append("rect")
