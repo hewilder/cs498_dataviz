@@ -226,7 +226,7 @@ var tip = d3.tip()
     return "<p><strong>% of Births:</strong> <span style='color:white'>" 
 		+ formatPercent(d.Pct_Of_Births) 
 		+ "</span></p>"
-		+"<p><span style='color:grey'>Total Births: "
+		+"<p><span style='color:#bfbfbf'>Total Births: "
 		+ formatComma(d.Births) 
 		+"</span></p>";
   })
@@ -634,7 +634,7 @@ function by_day_method_data() {
 				divTooltip.select("text").html("<tspan x=20 fill='white'>% of Day's Births: "
 					+ formatPercent(d.percent) 
 					+ "</tspan>"
-					+"<tspan x=20 y=10 fill='grey'>Total Births: "
+					+"<tspan x=20 y=10 fill='#bfbfbf'>Total Births: "
 					+ formatComma(d.y*1000)
 					+"</tspan>"
 				);
