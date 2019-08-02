@@ -134,7 +134,7 @@ body {
 </head>
 <body onload=default_focus()>
 
-<h1>2017 US Child Births v2</h1>
+<h1>2017 US Child Births v3</h1>
 
  
 <div class="btn-group">
@@ -233,7 +233,7 @@ function by_month_data() {
 		"text": "In 2017, August had the highest percentage of births",
 		"textWidth": 150,
 		"textOffset": [
-		  -50,
+		  50,
 		  -10
 		]
 	  }
@@ -273,7 +273,7 @@ function by_month_data() {
 		  //.attr("y", 6)
 		  //.attr("dy", ".71em")
 		  .style("text-anchor", "middle")
-		  .text("# of 2017 Births (Thousands)");
+		  .text("# of Births (Thousands)");
 	  
 	  svg.append("text")
 		.attr("x", (width / 2))             
@@ -345,7 +345,7 @@ function by_day_data() {
 	d3.csv("birth_data/birth_data_by_weekday.csv", function(error, data) {
 	  //x.domain(data.map(function(d) { return d.Month; }));
 	  x.domain(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]);
-	  y.domain([0, d3.max(data, function(d) { return d.Pct_Of_Births; })]);
+	  y.domain([0, d3.max(data, function(d) { return d.Births/1000; })]);
 
 	  svg.append("g")
 		  .attr("class", "x axis")
@@ -354,14 +354,14 @@ function by_day_data() {
 
 	  svg.append("g")
 		  .attr("class", "y axis")
-		  .call(yAxis)
+		  .call(yAxis_num)
 		.append("text")
 		  .attr("transform", "rotate(-90)")
 		  .attr("y", 0 - margin.left)
 		  .attr("x",0 - (height / 2))
 		  .attr("dy", "1em")
 		  .style("text-anchor", "middle")
-		  .text("% of 2017 Births");
+		  .text("# of Births (Thousands)");
 		  
 	  svg.append("text")
 		.attr("x", (width / 2))             
@@ -377,8 +377,8 @@ function by_day_data() {
 		  .attr("class", "bar")
 		  .attr("x", function(d) { return x(d.Weekday); })
 		  .attr("width", x.rangeBand())
-		  .attr("y", function(d) { return y(d.Pct_Of_Births); })
-		  .attr("height", function(d) { return height - y(d.Pct_Of_Births); })
+		  .attr("y", function(d) { return y(d.Births/1000); })
+		  .attr("height", function(d) { return height - y(d.Births/1000); })
 		  .on('mouseover', tip.show)
 		  .on('mouseout', tip.hide)
 		  
