@@ -134,7 +134,7 @@ body {
 </head>
 <body onload=default_focus()>
 
-<h1>2017 US Child Births v3</h1>
+<h1>2017 US Child Births v4</h1>
 
  
 <div class="btn-group">
@@ -346,6 +346,7 @@ function by_day_data() {
 	  //x.domain(data.map(function(d) { return d.Month; }));
 	  x.domain(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]);
 	  y.domain([0, d3.max(data, function(d) { return d.Births/1000; })]);
+	  //y.domain([0, 650]);
 
 	  svg.append("g")
 		  .attr("class", "x axis")
@@ -382,6 +383,29 @@ function by_day_data() {
 		  .on('mouseover', tip.show)
 		  .on('mouseout', tip.hide)
 		  
+	  var legend = svg.selectAll(".legend")
+		  .data(colors)
+		  .enter().append("g")
+		  .attr("class", "legend")
+		  .attr("transform", function(d, i) { return "translate(" + i * 175 + ", -15)"; });
+		 
+		legend.append("rect")
+		  .attr("x", width - 300)
+		  .attr("width", 18)
+		  .attr("height", 18)
+		  .style("fill", function(d, i) {return colors.slice()[i];});
+		 
+		legend.append("text")
+		  .attr("x", width - 280)
+		  .attr("y", 9)
+		  .attr("dy", ".35em")
+		  .attr("class", "d3-tip")
+		  .style("text-anchor", "start")
+		  .text(function(d, i) { 
+			return "All Deliveries";
+		  });
+	  	
+		
 	  svg.append("g")
 		 .attr("class", "annotations")
 		 .call(ringNote, annotations);
